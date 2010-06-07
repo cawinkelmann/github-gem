@@ -375,6 +375,8 @@ end
 
 helper :cache_data do |user|
   raw_data = Kernel.open(network_meta_for(user)).read
+  raise StandardError, "GitHub network_meta not available" if raw_data.size < 2
+  
   File.open( network_cache_path, 'w' ) do |out|
     out.write(raw_data)
   end
@@ -389,7 +391,7 @@ helper :cache_expired? do
 end
 
 helper :has_cache? do
-  File.file?(network_cache_path)
+  File.file?(network_cache_path) && !File.stat(network_cache_path).zero?
 end
 
 helper :has_commits_cache? do
